@@ -1,0 +1,13 @@
+/* Navbar.css */
+.navLink {
+    text-decoration: none; /* Remove underline */
+    padding: 10px;
+    border-radius: 20px; /* Make it circular */
+    margin: 5px; /* Add some margin between circles */
+}
+
+.navLink:hover {
+    background-color: #555; /* Grey background on hover */
+    color: white;
+    text-decoration: none; /* Ensure no underline on hover */
+}

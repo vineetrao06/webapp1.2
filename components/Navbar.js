@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom'; // Ensure compatibility with react-router-dom
 import { useTheme, Menu, Divider, Provider } from 'react-native-paper'; // Import useTheme and other components
+import './Navbar.css'; // Import the CSS file
 
 const Navbar = ({ isAuthenticated, onLogout }) => {
     const navigate = useNavigate();
@@ -32,10 +33,18 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
         <Provider>
             <View style={[styles.navbar, { backgroundColor: colors.background }]}>
                 <View style={styles.navLinks}>
-                    <Link to="/" style={styles.navLink}><Text style={styles.navText}>Logo/Home</Text></Link>
-                    <Link to="/top" style={styles.navLink}><Text style={styles.navText}>Top Songs</Text></Link>
-                    <Link to="/howitworks" style={styles.navLink}><Text style={styles.navText}>How It Works</Text></Link>
-                    <Link to="/join" style={styles.navLink}><Text style={styles.navText}>Join as Artist</Text></Link>
+                    <Link to="/" className="navLink" style={styles.navLink}>
+                        <Text style={styles.navText}>Logo/Home</Text>
+                    </Link>
+                    <Link to="/top" className="navLink" style={styles.navLink}>
+                        <Text style={styles.navText}>Top Songs</Text>
+                    </Link>
+                    <Link to="/howitworks" className="navLink" style={styles.navLink}>
+                        <Text style={styles.navText}>How It Works</Text>
+                    </Link>
+                    <Link to="/join" className="navLink" style={styles.navLink}>
+                        <Text style={styles.navText}>Join as Artist</Text>
+                    </Link>
                 </View>
                 {isAuthenticated ? (
                     <Menu
@@ -53,7 +62,7 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
                         <Menu.Item onPress={handleLogoutClick} title="Log Out" titleStyle={styles.menuItemText} />
                     </Menu>
                 ) : (
-                    <Link to="/signin" style={styles.navLink}>
+                    <Link to="/signin" className="navLink" style={styles.navLink}>
                         <Text style={styles.navText}>Sign In</Text>
                     </Link>
                 )}
@@ -76,6 +85,8 @@ const styles = StyleSheet.create({
     },
     navLink: {
         padding: 10,
+        borderRadius: 20, // Make it circular
+        margin: 5, // Add some margin between circles
     },
     navText: {
         color: '#fff',

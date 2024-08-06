@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         marginBottom: 20,
         paddingTop: 50,
+        fontWeight: 'bold',
     },
     buttonContainer: {
         flexDirection: 'column',
