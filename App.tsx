@@ -32,7 +32,17 @@ function App() {
 
   function handleLogout() {
     setIsAuthenticated(false);
-    localStorage.removeItem('isAuthenticated');
+    localStorage.setItem('isAuthenticated', 'false');
+  }
+
+  function homepageRedirect() {
+    // isAuthenticated ? <HomeScreen /> : <Navigate to="/signin" />
+    console.log("Is the user authenticated: " + isAuthenticated)
+    if (isAuthenticated) {
+      return <HomeScreen />
+    } else {
+      return <Navigate to="/signin" />
+    }
   }
 
   return (
@@ -42,7 +52,7 @@ function App() {
           <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
           <View style={styles.contentContainer}>
             <Routes>
-              <Route path="/" element={isAuthenticated ? <HomeScreen /> : <Navigate to="/signin" />} />
+              <Route path="/" element={homepageRedirect()} />
               <Route path="/signin" element={<SignInScreen onLogin={handleLogin} />} />
               <Route path="/top" element={<TopSongsScreen />} />
               <Route path="/songdetails/:id" element={<SongDetailsScreen />} />

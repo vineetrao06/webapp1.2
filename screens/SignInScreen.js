@@ -3,10 +3,13 @@ import { View, Text, StyleSheet, Button, Alert } from 'react-native';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-native';
 import { jwtDecode } from "jwt-decode";
+import { useTheme } from 'react-native-paper'; // Import React Native Paper components
 
 
 const SignInScreen = ({ onLogin }) => {
     const navigate = useNavigate();
+    const { colors } = useTheme(); // Access theme colors
+
 
     // This function is called when the login is successful
     const handleLoginSuccess = (response) => {
@@ -43,22 +46,26 @@ const SignInScreen = ({ onLogin }) => {
     };
 
     return (
-        <GoogleOAuthProvider clientId="479283790787-gcn4ulm531l0i4cbdfu9sep0rm5q2edj.apps.googleusercontent.com">
-            <View style={styles.container}>
-                <Text style={styles.title}>Sign in with Google</Text>
-                <GoogleLogin
-                    onSuccess={handleLoginSuccess}
-                    onError={handleLoginFailure}
-                    render={(renderProps) => (
-                        <Button
-                            title="Sign in with Google"
-                            onPress={() => handleButtonClick(renderProps)}
-                            disabled={renderProps.disabled}
-                        />
-                    )}
-                />
-            </View>
-        </GoogleOAuthProvider>
+        <View style={[{ backgroundColor: colors.background }]}>
+            <GoogleOAuthProvider clientId="479283790787-gcn4ulm531l0i4cbdfu9sep0rm5q2edj.apps.googleusercontent.com">
+                <View style={styles.container}>
+                    <Text style={[styles.title, { color: colors.primary }]}>Sign in with Google</Text>
+                    <GoogleLogin
+                        onSuccess={handleLoginSuccess}
+                        onError={handleLoginFailure}
+                        render={(renderProps) => (
+                            <Button
+                                title="Sign in with Google"
+                                onPress={() => handleButtonClick(renderProps)}
+                                disabled={renderProps.disabled}
+                            />
+                        )}
+                    />
+                </View>
+            </GoogleOAuthProvider>
+            <View style={styles.flexFiller}></View>
+        </View>
+        
     );
 };
 
@@ -75,6 +82,9 @@ const styles = StyleSheet.create({
         textAlign: "center",
         paddingTop: 20,
         fontWeight: 'bold',
+    },
+    flexFiller: {
+        paddingBottom: 1000,
     },
 });
 

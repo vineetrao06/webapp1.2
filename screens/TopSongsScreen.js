@@ -69,10 +69,15 @@ function TopSongsScreen() {
     }
 
     return (
-        <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-            <Text style={[styles.title, { color: colors.text }]}>Top Songs</Text>
-            {chunkArray(songs, 4).map(renderRow)}
-        </ScrollView>
+        <View>
+            <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+                <Text style={[styles.title, { color: colors.text }]}>Top Songs</Text>
+                {chunkArray(songs, 4).map(renderRow)}
+
+                <View style={styles.flexFiller}></View>
+            </ScrollView>
+        </View>
+        
     );
 }
 
@@ -85,6 +90,10 @@ const styles = StyleSheet.create({
         fontSize: 24,
         marginBottom: 20,
         textAlign: 'center',
+    },
+
+    flexFiller: {
+        paddingBottom: 1000,
     },
     row: {
         flexDirection: 'row',

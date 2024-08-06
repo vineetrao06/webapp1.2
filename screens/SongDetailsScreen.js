@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
 import axios from 'axios';
 import { useParams } from 'react-router-native'; // Note: use react-router-native instead of react-router-dom for React Native
+import { useTheme } from 'react-native-paper';
 
 const SongDetailsScreen = () => {
     const { id } = useParams(); // Get the song ID from the URL
     const [song, setSong] = useState(null);
     const [loading, setLoading] = useState(true);
+    const { colors } = useTheme();
+
 
     function findSongUrlById(songs, id) {
         // Iterate through the array of songs
@@ -52,7 +55,7 @@ const SongDetailsScreen = () => {
     }
 
     return (
-        <View style={styles.container}>
+        <View>
             <Text style={styles.songName}>{song.name}</Text>
             <Text style={styles.uploader}>By: {song.uploader}</Text>
             <Text style={styles.price}>Price: $50</Text> {/* Placeholder price */}
