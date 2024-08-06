@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import axios from 'axios';
 import { useParams } from 'react-router-native'; // Note: use react-router-native instead of react-router-dom for React Native
-import { useTheme } from 'react-native-paper';
+import { useTheme, Button } from 'react-native-paper';
 
 const SongDetailsScreen = () => {
     const { id } = useParams(); // Get the song ID from the URL
     const [song, setSong] = useState(null);
     const [loading, setLoading] = useState(true);
     const { colors } = useTheme();
-
 
     function findSongUrlById(songs, id) {
         // Iterate through the array of songs
@@ -47,22 +46,35 @@ const SongDetailsScreen = () => {
     }, [id]);
 
     if (loading) {
-        return <Text>Loading...</Text>;
+        return <Text style={[styles.text, { color: colors.text }]}>Loading...</Text>;
     }
 
     if (!song) {
-        return <Text>Song not found</Text>;
+        return <Text style={[styles.text, { color: colors.text }]}>Song not found</Text>;
     }
 
     return (
-        <View>
-            <Text style={styles.songName}>{song.name}</Text>
-            <Text style={styles.uploader}>By: {song.uploader}</Text>
-            <Text style={styles.price}>Price: $50</Text> {/* Placeholder price */}
-            <Text style={styles.genre}>Genre: Placeholder Genre</Text> {/* Placeholder genre */}
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+            <Text style={[styles.songName, { color: colors.primary }]}>{song.name}</Text>
+            <Text style={[styles.uploader, { color: colors.text }]}>By: {song.uploader}</Text>
+            <Text style={[styles.price, { color: colors.text }]}>Price: $50</Text> {/* Placeholder price */}
+            <Text style={[styles.genre, { color: colors.text }]}>Genre: Placeholder Genre</Text> {/* Placeholder genre */}
             {/* Replace <audio> element with a React Native audio player */}
-            <Button title="Play Song" onPress={() => console.log(`Playing ${song.url}`)} />
-            <Button title="Back to Top Songs" onPress={() => window.history.back()} />
+            <Button
+                mode="contained"
+                style={styles.button}
+                onPress={() => console.log(`Playing ${song.url}`)}
+            >
+                Play Song
+            </Button>
+            <Button
+                mode="contained"
+                style={styles.button}
+                onPress={() => window.history.back()}
+            >
+                Back to Top Songs
+            </Button>
+
         </View>
     );
 };
@@ -70,25 +82,38 @@ const SongDetailsScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
         padding: 20,
-        backgroundColor: '#f8f8f8',
+    },
+    text: {
+        textAlign: 'center',
+        marginBottom: 20,
     },
     songName: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 10,
+        textAlign: 'center',
     },
     uploader: {
         fontSize: 18,
         marginBottom: 10,
+        textAlign: 'center',
     },
     price: {
         fontSize: 18,
         marginBottom: 10,
+        textAlign: 'center',
     },
     genre: {
         fontSize: 18,
         marginBottom: 20,
+        textAlign: 'center',
+    },
+    button: {
+        marginVertical: 10,
+        width: '20%',
     },
 });
 

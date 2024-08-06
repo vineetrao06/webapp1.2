@@ -53,6 +53,7 @@ function TopSongsScreen() {
             <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
                 <Text style={[styles.title, { color: colors.primary }]}>Top Songs</Text>
                 {chunkArray(songs, 4).map(renderRow)}
+            <View style={[styles.flexFiller]}></View>
             </ScrollView>
         </View>
     );
@@ -71,8 +72,12 @@ const styles = StyleSheet.create({
     },
     row: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        flexWrap: 'wrap', // Ensure items wrap to the next line
+        justifyContent: 'flex-start', // Align items to the start of the row
         marginBottom: 20,
+    },
+    flexFiller: {
+    paddingBottom: 1000,
     },
 });
 

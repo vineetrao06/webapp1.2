@@ -16,15 +16,17 @@ const Profile = () => {
         async function getSongDetails() {
             const response = await axios.get(`http://localhost:8082/api/songs/`);
             const songsResponse = response.data;
-            const songsByUploader = getSongsByUploader(name, songsResponse);
+            console.log(songsResponse)
+            const songsByUploader = getSongsByUploader(email, songsResponse);
             setSongs(songsByUploader);
         }
+        console.log("current user's email: " + email)
 
         getSongDetails();
     }, [name]);
 
-    function getSongsByUploader(uploaderName, songs) {
-        return songs.filter(song => song.uploader === uploaderName);
+    function getSongsByUploader(uploaderEmail, songs) {
+        return songs.filter(song => song.email === uploaderEmail);
     }
 
     function renderRow(rowSongs) {
@@ -53,7 +55,8 @@ const Profile = () => {
             <Text style={[styles.name, { color: colors.primary, paddingTop: 20 }]}>Your Songs</Text>
 
             {chunkArray(songs, 4).map(renderRow)}
-            
+            <View style={[styles.flexFiller]}></View>
+
         </ScrollView>
     );
 };
@@ -80,10 +83,15 @@ const styles = StyleSheet.create({
         color: '#888',
         marginBottom: 20,
     },
+
+    flexFiller: {
+        paddingBottom: 1000,
+    },
     row: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
         width: '100%',
+        flexWrap: 'wrap', // Ensure items wrap to the next line
         marginBottom: 20,
     },
 });

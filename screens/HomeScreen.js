@@ -4,11 +4,11 @@ import axios from 'axios';
 import { GoogleSignin } from '@react-native-google-signin/google-signin'; // Import Google Sign-In
 import { Button, useTheme } from 'react-native-paper'; // Import React Native Paper components
 
-
 const HomeScreen = () => {
     const [song, setSong] = useState(null);
     const [songName, setSongName] = useState('');
     const [uploader, setUploader] = useState('');
+    const [successMessage, setSuccessMessage] = useState(''); // State to manage success message
     const { colors } = useTheme(); // Access theme colors
 
     useEffect(function () {
@@ -42,12 +42,14 @@ const HomeScreen = () => {
 
             formData.append('song', song);
             formData.append('uploader', localStorage.getItem("name")); // Send uploader's info
+            formData.append('email', localStorage.getItem("email")); // Send uploader's email
 
             try {
                 await axios.post('http://localhost:8082/upload', formData);
-                alert('Song uploaded successfully!');
+                setSuccessMessage('Song uploaded successfully!');
                 setSong(null);
                 setSongName('');
+                setTimeout(() => setSuccessMessage(''), 3000); // Clear the message after 3 seconds
             } catch (error) {
                 console.error('Error uploading song:', error);
                 alert('Failed to upload song.');
@@ -95,6 +97,10 @@ const HomeScreen = () => {
                         Confirm
                     </Button>
 
+                    {successMessage && (
+                        <Text style={[styles.successMessage, { color: 'green' }]}>{successMessage}</Text>
+                    )}
+
                     <View style={styles.flexFiller}></View>
                 </View>
             </View>
@@ -129,15 +135,9 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         width: '80%',
     },
-
     flexFiller: {
         paddingBottom: 1000,
     },
-
-    // bottomButton: {
-    //     paddingBottom: 1000,
-    // },
-
     audioContainer: {
         marginVertical: 20,
         paddingVertical: 10, // Add vertical padding
@@ -148,6 +148,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     songName: {
+        fontSize: 16,
+    },
+    successMessage: {
+        marginTop: 20,
         fontSize: 16,
     },
 });

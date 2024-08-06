@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom'; // Ensure compatibility with react-router-dom
 import { useTheme, Menu, Divider, Provider } from 'react-native-paper'; // Import useTheme and other components
+import { MaterialIcons } from '@expo/vector-icons'; // Import Material Icons for dropdown arrow
 import './Navbar.css'; // Import the CSS file
 
 const Navbar = ({ isAuthenticated, onLogout }) => {
@@ -10,6 +11,8 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
     const [menuVisible, setMenuVisible] = useState(false);
 
     const profilePicture = localStorage.getItem('picture');
+    const fullName = localStorage.getItem('name');
+    const firstName = fullName ? fullName.split(' ')[0] : '';
 
     const handleProfileClick = () => {
         setMenuVisible(true);
@@ -53,13 +56,15 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
                         anchor={
                             <TouchableOpacity onPress={handleProfileClick} style={styles.profileContainer}>
                                 <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
+                                <Text style={styles.userName}>{firstName}</Text>
+                                <MaterialIcons name="arrow-drop-down" size={24} color="#fff" />
                             </TouchableOpacity>
                         }
                         contentStyle={{ backgroundColor: colors.background }}
                     >
-                        <Menu.Item onPress={handleViewProfile} title="View Profile" titleStyle={styles.menuItemText} />
+                        <Menu.Item onPress={handleViewProfile} title="View Profile" titleStyle={styles.menuItemText} style={styles.menuItem} />
                         <Divider />
-                        <Menu.Item onPress={handleLogoutClick} title="Log Out" titleStyle={styles.menuItemText} />
+                        <Menu.Item onPress={handleLogoutClick} title="Log Out" titleStyle={styles.menuItemText} style={styles.menuItem} />
                     </Menu>
                 ) : (
                     <Link to="/signin" className="navLink" style={styles.navLink}>
@@ -77,6 +82,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between', // Adjust for spacing
         alignItems: 'center', // Align items vertically
         padding: 10,
+        position: 'relative', // or 'fixed' if you want it always visible on top
+        zIndex: 1000, // High zIndex to ensure it's on top
     },
     navLinks: {
         flexDirection: 'row',
@@ -92,16 +99,28 @@ const styles = StyleSheet.create({
         color: '#fff',
     },
     profileContainer: {
+        flexDirection: 'row',
+        alignItems: 'center', // Align items vertically
         padding: 1, // Adjust padding
         paddingRight: 30, // Adjust padding
+        borderRadius: 10, // Adjust border radius accordingly
+        backgroundColor: 'rgba(255, 255, 255, 0.1)', // Add a semi-transparent background for better visibility
     },
     profilePicture: {
         width: 40, // Adjusted width
         height: 40, // Adjusted height
         borderRadius: 20, // Adjusted border radius
     },
+    userName: {
+        color: '#fff',
+        marginLeft: 5, // Adjust margin accordingly
+    },
     menuItemText: {
         color: '#fff',
+    },
+    menuItem: {
+        height: 30, // Adjust the height to half its original size
+        justifyContent: 'center', // Center the text vertically
     },
     button: {
         padding: 10,
@@ -109,6 +128,10 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: '#fff',
+    },
+    menu: {
+        marginTop: 25, // Adjust this value to ensure the menu is fully visible
+        zIndex: 1000, // Ensure the menu is on top
     },
 });
 

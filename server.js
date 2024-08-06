@@ -21,7 +21,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/songdb', {
 const songSchema = new mongoose.Schema({
     name: String,
     url: String,
-    uploader: String, // Store uploader's information
+    uploader: String, // Store uploader's name
+    email: String, // Store uploader's email
 });
 
 const Song = mongoose.model('Song', songSchema);
@@ -44,6 +45,7 @@ app.post('/upload', upload.single('song'), async (req, res) => {
         name: req.file.originalname,
         url: `/songfiles/${req.file.filename}`, // Ensure URL matches served static directory
         uploader: req.body.uploader, // Get uploader's name from request body
+        email: req.body.email, // Get uploader's email from request body
     });
 
 

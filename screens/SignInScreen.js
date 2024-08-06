@@ -29,6 +29,7 @@ const SignInScreen = ({ onLogin }) => {
 
 
 
+
         onLogin(); // Update authentication state
         navigate('/'); // Redirect to home page
     };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, SafeAreaView } from 'react-native';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -13,36 +13,24 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import customTheme from './theme';
 
 function App() {
-  
-  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+  // Initialize state from local storage
+  const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('isAuthenticated') === 'true');
 
+  // Monitor the state change for debugging purposes
+  useEffect(() => {
+    console.log("Authentication status:", isAuthenticated);
+  }, [isAuthenticated]);
 
-  React.useEffect(() => {
-    const authStatus = localStorage.getItem('isAuthenticated');
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
-    }
-    
-  }, []);
-
+  // Login handler
   function handleLogin() {
     setIsAuthenticated(true);
     localStorage.setItem('isAuthenticated', 'true');
   }
 
+  // Logout handler
   function handleLogout() {
     setIsAuthenticated(false);
     localStorage.setItem('isAuthenticated', 'false');
-  }
-
-  function homepageRedirect() {
-    // isAuthenticated ? <HomeScreen /> : <Navigate to="/signin" />
-    console.log("Is the user authenticated: " + isAuthenticated)
-    if (isAuthenticated) {
-      return <HomeScreen />
-    } else {
-      return <Navigate to="/signin" />
-    }
   }
 
   return (
@@ -52,13 +40,13 @@ function App() {
           <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
           <View style={styles.contentContainer}>
             <Routes>
-              <Route path="/" element={homepageRedirect()} />
+              <Route path="/" element={isAuthenticated ? <HomeScreen /> : <Navigate to="/signin" />} />
               <Route path="/signin" element={<SignInScreen onLogin={handleLogin} />} />
               <Route path="/top" element={<TopSongsScreen />} />
               <Route path="/songdetails/:id" element={<SongDetailsScreen />} />
               <Route path="/howitworks" element={<HowItWorksScreen />} />
               <Route path="/join" element={<JoinAsArtistScreen />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/signin" />} />
             </Routes>
           </View>
         </SafeAreaView>
@@ -69,12 +57,10 @@ function App() {
 
 const styles = StyleSheet.create({
   safeArea: {
-    // flex: 1,
     justifyContent: 'flex-start', // Ensure content starts from the top
     padding: 0, // Remove any default padding
   },
   contentContainer: {
-    // flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'stretch', // Ensure the container stretches to full width
     padding: 0, // Remove any default padding
