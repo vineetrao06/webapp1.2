@@ -88,12 +88,14 @@ const HomeScreen = () => {
 
                     <Button
                         mode="contained"
-                        style={[styles.button, { backgroundColor: colors.onSurface }]} // White button
+                        style={[styles.button, styles.bottomButton, { backgroundColor: colors.onSurface }]} // White button
                         labelStyle={{ color: colors.text }} // Text color same as button text
                         onPress={handleConfirm}
                     >
                         Confirm
                     </Button>
+
+                    <View style={styles.flexFiller}></View>
                 </View>
             </View>
         </SafeAreaView>
@@ -114,6 +116,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         marginBottom: 20,
+        paddingTop: 50,
     },
     buttonContainer: {
         flexDirection: 'column',
@@ -125,6 +128,15 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         width: '80%',
     },
+
+    flexFiller: {
+        paddingBottom: 1000,
+    },
+
+    // bottomButton: {
+    //     paddingBottom: 1000,
+    // },
+
     audioContainer: {
         marginVertical: 20,
         paddingVertical: 10, // Add vertical padding

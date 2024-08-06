@@ -1,4 +1,3 @@
-// App.js
 import React from 'react';
 import { View, StyleSheet, SafeAreaView } from 'react-native';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
@@ -14,13 +13,16 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import customTheme from './theme';
 
 function App() {
+  
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+
 
   React.useEffect(() => {
     const authStatus = localStorage.getItem('isAuthenticated');
     if (authStatus === 'true') {
       setIsAuthenticated(true);
     }
+    
   }, []);
 
   function handleLogin() {
@@ -38,7 +40,7 @@ function App() {
       <Router>
         <SafeAreaView style={styles.safeArea}>
           <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
-          <View style={styles.container}>
+          <View style={styles.contentContainer}>
             <Routes>
               <Route path="/" element={isAuthenticated ? <HomeScreen /> : <Navigate to="/signin" />} />
               <Route path="/signin" element={<SignInScreen onLogin={handleLogin} />} />
@@ -57,11 +59,15 @@ function App() {
 
 const styles = StyleSheet.create({
   safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
+    // flex: 1,
     justifyContent: 'flex-start', // Ensure content starts from the top
+    padding: 0, // Remove any default padding
+  },
+  contentContainer: {
+    // flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'stretch', // Ensure the container stretches to full width
+    padding: 0, // Remove any default padding
   },
 });
 
