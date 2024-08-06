@@ -14,9 +14,16 @@ const SignInScreen = ({ onLogin }) => {
         Alert.alert('Login Success', 'You have successfully logged in.');
 
         const decodedResponse = jwtDecode(response.credential)
-        const nameOfUser = decodedResponse.name
+        const name = decodedResponse.name
+        const picture = decodedResponse.picture
+        const email = decodedResponse.email
 
-        localStorage.setItem('name', nameOfUser);
+        console.log(decodedResponse)
+
+        localStorage.setItem('name', name);
+        localStorage.setItem('picture', picture);
+        localStorage.setItem('email', email);
+
 
 
         onLogin(); // Update authentication state

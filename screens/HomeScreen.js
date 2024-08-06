@@ -4,6 +4,7 @@ import axios from 'axios';
 import { GoogleSignin } from '@react-native-google-signin/google-signin'; // Import Google Sign-In
 import { Button, useTheme } from 'react-native-paper'; // Import React Native Paper components
 
+
 const HomeScreen = () => {
     const [song, setSong] = useState(null);
     const [songName, setSongName] = useState('');
@@ -59,38 +60,42 @@ const HomeScreen = () => {
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
             <View style={styles.content}>
-                <Text style={[styles.title, { color: colors.text }]}>Upload a Song</Text>
+                <Text style={[styles.title, { color: colors.primary }]}>Upload a Song</Text>
 
-                <Button
-                    mode="contained"
-                    style={[styles.button, { backgroundColor: colors.onBackground}]}
-                    onPress={() => document.getElementById('fileInput').click()}
-                >
-                    <Text style={{ color: colors.onPrimary }}>Upload Song</Text>
-                </Button>
+                <View style={styles.buttonContainer}>
+                    <Button
+                        mode="contained"
+                        style={[styles.button, { backgroundColor: colors.onSurface }]}
+                        labelStyle={{ color: colors.text }}
+                        onPress={() => document.getElementById('fileInput').click()}
+                    >
+                        Upload Song
+                    </Button>
 
-                <input
-                    type="file"
-                    id="fileInput"
-                    style={{ display: 'none' }}
-                    accept="audio/*"
-                    onChange={handleFileChange}
-                />
+                    <input
+                        type="file"
+                        id="fileInput"
+                        style={{ display: 'none' }}
+                        accept="audio/*"
+                        onChange={handleFileChange}
+                    />
 
-                {song && (
-                    <View style={[styles.audioContainer, { backgroundColor: colors.onSurface }]}>
-                        <Text style={[styles.songName, { color: colors.text }]}>{songName}</Text>
-                    </View>
-                )}
+                    {song && (
+                        <View style={[styles.audioContainer, { backgroundColor: colors.surface }]}>
+                            <Text style={[styles.songName, { color: colors.text }]}>{songName}</Text>
+                        </View>
+                    )}
+
+                    <Button
+                        mode="contained"
+                        style={[styles.button, { backgroundColor: colors.onSurface }]} // White button
+                        labelStyle={{ color: colors.text }} // Text color same as button text
+                        onPress={handleConfirm}
+                    >
+                        Confirm
+                    </Button>
+                </View>
             </View>
-
-            <Button
-                mode="contained"
-                style={[styles.button, { backgroundColor: '#28a745' }]} // Override for confirm button
-                onPress={handleConfirm}
-            >
-                <Text style={{ color: colors.onPrimary }}>Confirm</Text>
-            </Button>
         </SafeAreaView>
     );
 };
@@ -98,17 +103,23 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'space-between',
+        justifyContent: 'center',
+        padding: 20,
     },
     content: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingBottom: 80,
     },
     title: {
         fontSize: 24,
         marginBottom: 20,
+    },
+    buttonContainer: {
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
     },
     button: {
         marginVertical: 10,
@@ -116,10 +127,12 @@ const styles = StyleSheet.create({
     },
     audioContainer: {
         marginVertical: 20,
-        paddingBottom: 20, // Add extra white space at the bottom of each song card
+        paddingVertical: 10, // Add vertical padding
         borderWidth: 1,  // Optional: Add border to visualize card
         borderColor: '#ddd', // Optional: Border color
         borderRadius: 5, // Optional: Rounded corners
+        width: '80%',
+        alignItems: 'center',
     },
     songName: {
         fontSize: 16,

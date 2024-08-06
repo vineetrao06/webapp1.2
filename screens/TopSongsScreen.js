@@ -1,12 +1,13 @@
-// TopSongsScreen.js
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from 'react-native-paper';
 
 function TopSongsScreen() {
     const [songs, setSongs] = useState([]);
     const navigate = useNavigate();
+    const { colors } = useTheme();
 
     useEffect(function () {
         function fetchSongs() {
@@ -39,14 +40,14 @@ function TopSongsScreen() {
                     return (
                         <TouchableOpacity
                             key={song._id}
-                            style={styles.card}
+                            style={[styles.card, { backgroundColor: colors.background, borderColor: colors.surface }]}
                             onPress={() => handleSongClick(song)}
                             activeOpacity={0.8}
                         >
                             <View style={styles.cardContent}>
-                                <Text style={styles.songName}>{song.name}</Text>
-                                <Text style={styles.uploader}>By: {song.uploader}</Text>
-                                <Text style={styles.songPublisher}>{song.publisher}</Text>
+                                <Text style={[styles.songName, { color: colors.text }]}>{song.name}</Text>
+                                <Text style={[styles.uploader, { color: colors.text }]}>By: {song.uploader}</Text>
+                                <Text style={[styles.songPublisher, { color: colors.text }]}>{song.publisher}</Text>
                                 <audio controls style={styles.audio}>
                                     <source src={song.url} type="audio/mpeg" />
                                     Your browser does not support the audio element.
@@ -68,8 +69,8 @@ function TopSongsScreen() {
     }
 
     return (
-        <ScrollView style={styles.container}>
-            <Text style={styles.title}>Top Songs</Text>
+        <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+            <Text style={[styles.title, { color: colors.text }]}>Top Songs</Text>
             {chunkArray(songs, 4).map(renderRow)}
         </ScrollView>
     );
@@ -79,7 +80,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 10,
-        backgroundColor: '#f8f8f8',
     },
     title: {
         fontSize: 24,
@@ -92,7 +92,6 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     card: {
-        backgroundColor: '#fff',
         borderRadius: 8,
         padding: 10,
         width: '23%',
@@ -102,6 +101,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 4,
         elevation: 5,
+        borderWidth: 1, // Add border width
     },
     cardContent: {
         alignItems: 'center',

@@ -1,5 +1,6 @@
+// App.js
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, SafeAreaView } from 'react-native';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import HomeScreen from './screens/HomeScreen';
@@ -8,8 +9,9 @@ import HowItWorksScreen from './screens/HowItWorksScreen';
 import JoinAsArtistScreen from './screens/JoinAsArtistScreen';
 import TopSongsScreen from './screens/TopSongsScreen';
 import SongDetailsScreen from './screens/SongDetailsScreen';
-import { Provider as PaperProvider, MD3DarkTheme } from 'react-native-paper';
-// import './global.css'; // Import the global CSS
+import Profile from './screens/Profile';
+import { Provider as PaperProvider } from 'react-native-paper';
+import customTheme from './theme';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
@@ -32,27 +34,34 @@ function App() {
   }
 
   return (
-    <PaperProvider theme={MD3DarkTheme}>
+    <PaperProvider theme={customTheme}>
       <Router>
-        <View style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
           <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
-          <Routes>
-            <Route path="/" element={isAuthenticated ? <HomeScreen /> : <Navigate to="/signin" />} />
-            <Route path="/signin" element={<SignInScreen onLogin={handleLogin} />} />
-            <Route path="/top" element={<TopSongsScreen />} />
-            <Route path="/songdetails/:id" element={<SongDetailsScreen />} />
-            <Route path="/howitworks" element={<HowItWorksScreen />} />
-            <Route path="/join" element={<JoinAsArtistScreen />} />
-          </Routes>
-        </View>
+          <View style={styles.container}>
+            <Routes>
+              <Route path="/" element={isAuthenticated ? <HomeScreen /> : <Navigate to="/signin" />} />
+              <Route path="/signin" element={<SignInScreen onLogin={handleLogin} />} />
+              <Route path="/top" element={<TopSongsScreen />} />
+              <Route path="/songdetails/:id" element={<SongDetailsScreen />} />
+              <Route path="/howitworks" element={<HowItWorksScreen />} />
+              <Route path="/join" element={<JoinAsArtistScreen />} />
+              <Route path="/profile" element={<Profile />} />
+            </Routes>
+          </View>
+        </SafeAreaView>
       </Router>
     </PaperProvider>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
+    justifyContent: 'flex-start', // Ensure content starts from the top
   },
 });
 
