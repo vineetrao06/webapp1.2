@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom'; // Ensure compatibility with react-router-dom
 import { useTheme, Menu, Divider, Provider } from 'react-native-paper'; // Import useTheme and other components
 import { MaterialIcons } from '@expo/vector-icons'; // Import Material Icons for dropdown arrow
@@ -9,6 +9,7 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
     const navigate = useNavigate();
     const { colors } = useTheme();
     const [menuVisible, setMenuVisible] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const profilePicture = localStorage.getItem('picture');
     const fullName = localStorage.getItem('name');
@@ -32,23 +33,41 @@ const Navbar = ({ isAuthenticated, onLogout }) => {
         onLogout();
     };
 
+    const handleSearchChange = (query) => {
+        setSearchQuery(query);
+    };
+
+    const handleSearchSubmit = () => {
+        navigate(`/search?query=${searchQuery}`);
+    };
+
     return (
         <Provider>
             <View style={[styles.navbar, { backgroundColor: colors.background }]}>
-                <View style={styles.navLinks}>
-                    <Link to="/" className="navLink" style={styles.navLink}>
-                        <Text style={styles.navText}>Logo/Home</Text>
-                    </Link>
-                    <Link to="/top" className="navLink" style={styles.navLink}>
-                        <Text style={styles.navText}>Top Songs</Text>
-                    </Link>
-                    <Link to="/howitworks" className="navLink" style={styles.navLink}>
-                        <Text style={styles.navText}>How It Works</Text>
-                    </Link>
-                    <Link to="/join" className="navLink" style={styles.navLink}>
-                        <Text style={styles.navText}>Join as Artist</Text>
-                    </Link>
+                <View style={styles.navLinksContainer}>
+                    <View style={styles.navLinks}>
+                        <Link to="/" className="navLink" style={styles.navLink}>
+                            <Text style={styles.navText}>Logo/Home</Text>
+                        </Link>
+                        <Link to="/top" className="navLink" style={styles.navLink}>
+                            <Text style={styles.navText}>Top Songs</Text>
+                        </Link>
+                        <Link to="/howitworks" className="navLink" style={styles.navLink}>
+                            <Text style={styles.navText}>How It Works</Text>
+                        </Link>
+                        <Link to="/join" className="navLink artist" style={styles.navLink}>
+                            <Text style={styles.navText}>Join as Artist</Text>
+                        </Link>
+                    </View>
                 </View>
+                <TextInput
+                    style={styles.searchBar}
+                    placeholder="Search..."
+                    placeholderTextColor="#999"
+                    value={searchQuery}
+                    onChangeText={handleSearchChange}
+                    onSubmitEditing={handleSearchSubmit}
+                />
                 {isAuthenticated ? (
                     <Menu
                         visible={menuVisible}
@@ -80,15 +99,19 @@ const styles = StyleSheet.create({
     navbar: {
         flexDirection: 'row',
         justifyContent: 'space-between', // Adjust for spacing
-        alignItems: 'center', // Align items vertically
+        // alignItems: 'center', // Align items vertically
         padding: 10,
         position: 'relative', // or 'fixed' if you want it always visible on top
         zIndex: 1000, // High zIndex to ensure it's on top
     },
+    navLinksContainer: {
+        flex: 1,
+        alignItems: 'flex-start', // Align items to the left
+        paddingRight: 50,
+        marginLeft: 70
+    },
     navLinks: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
-        flex: 1, // Take up remaining space
     },
     navLink: {
         padding: 10,
@@ -98,11 +121,25 @@ const styles = StyleSheet.create({
     navText: {
         color: '#fff',
     },
+    searchBar: {
+        width: '45%', // Adjusted to half its original width
+        height: 40,
+        borderColor: 'gray',
+        borderWidth: 1,
+        borderRadius: 20,
+        paddingHorizontal: 10,
+        color: '#fff',
+        marginHorizontal: 10,
+    },
+    artist: {
+        paddingRight: 10    ,
+    },
     profileContainer: {
         flexDirection: 'row',
         alignItems: 'center', // Align items vertically
         padding: 1, // Adjust padding
         paddingRight: 30, // Adjust padding
+        marginRight: 70, // Add margin to the right
         borderRadius: 10, // Adjust border radius accordingly
         backgroundColor: 'rgba(255, 255, 255, 0.1)', // Add a semi-transparent background for better visibility
     },
@@ -119,7 +156,7 @@ const styles = StyleSheet.create({
         color: '#fff',
     },
     menuItem: {
-        height: 30, // Adjust the height to half its original size
+        height: 25, // Adjust the height to fit within the navbar height
         justifyContent: 'center', // Center the text vertically
     },
     button: {
