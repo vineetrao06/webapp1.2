@@ -63,7 +63,7 @@ const SongDetailsScreen = () => {
             <Button
                 mode="contained"
                 style={styles.button}
-                onPress={() => console.log(`Playing ${song.url}`)}
+                onPress={() => playSong() }
             >
                 Play Song
             </Button>
@@ -74,7 +74,7 @@ const SongDetailsScreen = () => {
             >
                 Back to Top Songs
             </Button>
-
+            <View style={[styles.flexFiller]}></View>
         </View>
     );
 };
@@ -89,6 +89,10 @@ const styles = StyleSheet.create({
     text: {
         textAlign: 'center',
         marginBottom: 20,
+    },
+
+    flexFiller: {
+        paddingBottom: 1000,
     },
     songName: {
         fontSize: 24,

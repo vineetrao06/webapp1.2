@@ -23,6 +23,7 @@ const songSchema = new mongoose.Schema({
     url: String,
     uploader: String, // Store uploader's name
     email: String, // Store uploader's email
+    genre: String, // Store song genre
 });
 
 const Song = mongoose.model('Song', songSchema);
@@ -46,9 +47,8 @@ app.post('/upload', upload.single('song'), async (req, res) => {
         url: `/songfiles/${req.file.filename}`, // Ensure URL matches served static directory
         uploader: req.body.uploader, // Get uploader's name from request body
         email: req.body.email, // Get uploader's email from request body
+        genre: req.body.genre, // Get genre from request body
     });
-
-
 
     try {
         await song.save();

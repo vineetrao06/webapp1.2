@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { useTheme } from 'react-native-paper';
 import SongCard from '../components/SongCard';
 
 function TopSongsScreen() {
     const [songs, setSongs] = useState([]);
-    const navigate = useNavigate();
     const { colors } = useTheme();
 
     useEffect(() => {
@@ -30,39 +28,45 @@ function TopSongsScreen() {
         fetchSongs();
     }, []);
 
-    function renderRow(rowSongs) {
+    function renderSongsByGenre(genre) {
+        const filteredSongs = songs.filter(song => song.genre === genre);
+        if (filteredSongs.length === 0) return null;
+
         return (
-            <View style={styles.row} key={rowSongs[0]._id}>
-                {rowSongs.map(song => (
-                    <SongCard key={song._id} song={song} />
-                ))}
+            <View key={genre} style={styles.genreContainer}>
+                <Text style={[styles.genreTitle, { color: colors.primary }]}>{genre}</Text>
+                <View style={styles.row}>
+                    {filteredSongs.map(song => (
+                        <SongCard key={song._id} song={song} />
+                    ))}
+                </View>
             </View>
         );
     }
 
-    function chunkArray(array, size) {
-        const chunkedArray = [];
-        for (let i = 0; i < array.length; i += size) {
-            chunkedArray.push(array.slice(i, i + size));
-        }
-        return chunkedArray;
-    }
+    const genres = ['Pop', 'Rock', 'Hip-Hop/Rap', 'Jazz', 'Classical', 'Country', 'Electronic/Dance', 'R&B/Soul', 'Reggae', 'Blues'];
 
     return (
-        <View>
-            <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-                <Text style={[styles.title, { color: colors.primary }]}>Top Songs</Text>
-                {chunkArray(songs, 4).map(renderRow)}
-            <View style={[styles.flexFiller]}></View>
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <View style={styles.container}>
+                    <Text style={[styles.title, { color: colors.primary }]}>Top Songs</Text>
+                    {genres.map(renderSongsByGenre)}
+                </View>
             </ScrollView>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
+    scrollContainer: {
+        flexGrow: 1,
+        backgroundColor: 'transparent',
+    },
     container: {
-        flex: 1,
         padding: 10,
+        marginLeft: 80,
+        marginRight: 80,
     },
     title: {
         fontSize: 24,
@@ -70,14 +74,21 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
     },
+    genreContainer: {
+        marginBottom: 30,
+    },
+    genreTitle: {
+        fontSize: 20,
+        marginBottom: 10,
+        marginTop: 20,
+        textAlign: 'left',
+        fontWeight: 'bold',
+    },
     row: {
         flexDirection: 'row',
-        flexWrap: 'wrap', // Ensure items wrap to the next line
-        justifyContent: 'flex-start', // Align items to the start of the row
+        flexWrap: 'wrap',
+        justifyContent: 'flex-start',
         marginBottom: 20,
-    },
-    flexFiller: {
-    paddingBottom: 1000,
     },
 });
 

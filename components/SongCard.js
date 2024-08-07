@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,7 +12,7 @@ const SongCard = ({ song }) => {
     };
 
     return (
-        <TouchableOpacity
+        <Pressable
             style={[styles.card, { backgroundColor: colors.background, borderColor: colors.surface }]}
             onPress={handleSongClick}
             activeOpacity={0.8}
@@ -25,7 +25,7 @@ const SongCard = ({ song }) => {
                     Your browser does not support the audio element.
                 </audio>
             </View>
-        </TouchableOpacity>
+        </Pressable>
     );
 };
 
