@@ -48,22 +48,23 @@ const Profile = () => {
     }
 
     return (
-        <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
+        <ScrollView style={styles.scrollView} contentContainerStyle={[styles.contentContainer, { backgroundColor: colors.background }]}>
             <Image source={{ uri: picture }} style={styles.profilePicture} />
             <Text style={[styles.name, { color: colors.onPrimary }]}>{name}</Text>
-            <Text style={[styles.email, { color: colors.Text }]}>{email}</Text>
+            <Text style={[styles.email, { color: colors.text }]}>{email}</Text>
             <Text style={[styles.name, { color: colors.primary, paddingTop: 20 }]}>Your Songs</Text>
-
             {chunkArray(songs, 4).map(renderRow)}
-            <View style={[styles.flexFiller]}></View>
-
+            <View style={styles.flexFiller}></View>
         </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
+    scrollView: {
         flex: 1,
+    },
+    contentContainer: {
+        flexGrow: 1,
         alignItems: 'center',
         padding: 20,
     },
@@ -83,7 +84,6 @@ const styles = StyleSheet.create({
         color: '#888',
         marginBottom: 20,
     },
-
     flexFiller: {
         paddingBottom: 1000,
     },

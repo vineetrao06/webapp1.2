@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, SafeAreaView } from 'react-native';
+import { View, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import HomeScreen from './screens/HomeScreen';
@@ -34,24 +34,27 @@ function App() {
   }
 
   return (
-    <PaperProvider theme={customTheme}>
-      <Router>
-        <SafeAreaView style={styles.safeArea}>
-          <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
-          <View style={styles.contentContainer}>
-            <Routes>
-              <Route path="/" element={isAuthenticated ? <HomeScreen /> : <Navigate to="/signin" />} />
-              <Route path="/signin" element={<SignInScreen onLogin={handleLogin} />} />
-              <Route path="/top" element={<TopSongsScreen />} />
-              <Route path="/songdetails/:id" element={<SongDetailsScreen />} />
-              <Route path="/howitworks" element={<HowItWorksScreen />} />
-              <Route path="/join" element={<JoinAsArtistScreen />} />
-              <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/signin" />} />
-            </Routes>
-          </View>
-        </SafeAreaView>
-      </Router>
-    </PaperProvider>
+    <ScrollView>
+      <PaperProvider theme={customTheme}>
+        <Router>
+          <SafeAreaView style={styles.safeArea}>
+            <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
+            <View style={styles.contentContainer}>
+              <Routes>
+                <Route path="/" element={isAuthenticated ? <HomeScreen /> : <Navigate to="/signin" />} />
+                <Route path="/signin" element={<SignInScreen onLogin={handleLogin} />} />
+                <Route path="/top" element={<TopSongsScreen />} />
+                <Route path="/songdetails/:id" element={<SongDetailsScreen />} />
+                <Route path="/howitworks" element={<HowItWorksScreen />} />
+                <Route path="/join" element={<JoinAsArtistScreen />} />
+                <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/signin" />} />
+              </Routes>
+            </View>
+          </SafeAreaView>
+        </Router>
+      </PaperProvider>
+    </ScrollView>
+    
   );
 }
 

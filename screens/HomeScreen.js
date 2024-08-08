@@ -1,26 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import axios from 'axios';
-import { GoogleSignin } from '@react-native-google-signin/google-signin'; // Import Google Sign-In
-import { Button, useTheme, Menu, TextInput } from 'react-native-paper'; // Import React Native Paper components
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { Button, useTheme, Menu, TextInput, Chip } from 'react-native-paper';
 
 const HomeScreen = () => {
     const [song, setSong] = useState(null);
     const [songName, setSongName] = useState('');
     const [uploader, setUploader] = useState('');
-    const [successMessage, setSuccessMessage] = useState(''); // State to manage success message
-    const [selectedGenre, setSelectedGenre] = useState(''); // State for genre
-    const [creatorSearch, setCreatorSearch] = useState(''); // State for creator search
-    const [menuVisible, setMenuVisible] = useState(false); // State to control dropdown visibility
-    const { colors } = useTheme(); // Access theme colors
+    const [successMessage, setSuccessMessage] = useState('');
+    const [selectedGenre, setSelectedGenre] = useState('');
+    const [creatorSearch, setCreatorSearch] = useState('');
+    const [menuVisible, setMenuVisible] = useState(false);
+    const [suggestions, setSuggestions] = useState([]);
+    const [selectedCreators, setSelectedCreators] = useState([]);
+    const [errorMessage, setErrorMessage] = useState(''); // State to manage error message
+    const { colors } = useTheme();
 
     useEffect(() => {
-        // Function to fetch user info
         async function fetchUserInfo() {
             try {
-                const userInfo = await GoogleSignin.getCurrentUser(); // Get user info
+                const userInfo = await GoogleSignin.getCurrentUser();
                 if (userInfo) {
-                    setUploader(localStorage.getItem("name")); // Set uploader info
+                    setUploader(localStorage.getItem("name"));
                 }
             } catch (error) {
                 console.error('Error fetching user info:', error);
@@ -29,6 +31,8 @@ const HomeScreen = () => {
 
         fetchUserInfo();
     }, []);
+
+    const names = ['Alice Johnson', 'Bob Smith', 'Charlie Brown', 'Daisy Miller', 'Evan Davis', 'Fiona Clark', 'George Harris', 'Hannah Lee', 'Ian Walker', 'Jane Adams'];
 
     function handleFileChange(event) {
         const file = event.target.files[0];
@@ -39,32 +43,52 @@ const HomeScreen = () => {
     }
 
     async function handleConfirm() {
+        if (!selectedGenre) {
+            setErrorMessage('Please select a genre.');
+            return;
+        }
+
         if (song) {
             const formData = new FormData();
-            setUploader(localStorage.getItem("name")); // Set uploader info
+            setUploader(localStorage.getItem("name"));
 
             formData.append('song', song);
-            formData.append('uploader', localStorage.getItem("name")); // Send uploader's info
-            formData.append('email', localStorage.getItem("email")); // Send uploader's email
-            formData.append('genre', selectedGenre); // Send genre
-
-            console.log("song genre is " + selectedGenre)
-            // console.log("formata that gets sent to axios " + formData)
+            formData.append('uploader', localStorage.getItem("name"));
+            formData.append('email', localStorage.getItem("email"));
+            formData.append('genre', selectedGenre);
 
             try {
                 await axios.post('http://localhost:8082/upload', formData);
                 setSuccessMessage('Song uploaded successfully!');
                 setSong(null);
                 setSongName('');
-                setSelectedGenre(''); // Clear the selected genre
-                setTimeout(() => setSuccessMessage(''), 3000); // Clear the message after 3 seconds
+                setSelectedGenre('');
+                setTimeout(() => setSuccessMessage(''), 3000);
+                setErrorMessage(''); // Clear error message on successful upload
             } catch (error) {
                 console.error('Error uploading song:', error);
                 alert('Failed to upload song.');
             }
         } else {
-            alert('Please upload a song first.');
+            setErrorMessage('Please upload a song first.');
         }
+    }
+
+    function handleSearchChange(text) {
+        setCreatorSearch(text);
+        setSuggestions(names.filter(name => name.toLowerCase().includes(text.toLowerCase())));
+    }
+
+    function handleTagPress(name) {
+        if (!selectedCreators.includes(name)) {
+            setSelectedCreators([...selectedCreators, name]);
+        }
+        setCreatorSearch('');
+        setSuggestions([]);
+    }
+
+    function handleTagRemove(name) {
+        setSelectedCreators(selectedCreators.filter(item => item !== name));
     }
 
     return (
@@ -87,7 +111,7 @@ const HomeScreen = () => {
                             {selectedGenre || 'Select Genre'}
                         </Button>
                     }
-                    contentStyle={styles.menuContent} // Apply custom style to Menu content
+                    contentStyle={[styles.menuContent, { backgroundColor: colors.surface }]}
                 >
                     {['Pop', 'Rock', 'Hip-Hop/Rap', 'Jazz', 'Classical', 'Country', 'Electronic/Dance', 'R&B/Soul', 'Reggae', 'Blues'].map(genre => (
                         <Menu.Item
@@ -97,22 +121,44 @@ const HomeScreen = () => {
                                 setMenuVisible(false);
                             }}
                             title={genre}
+                            titleStyle={{ color: colors.text }}
                         />
                     ))}
                 </Menu>
 
-                <TextInput
-                    style={[styles.searchInput, { backgroundColor: 'transparent', color: colors.onPrimary }]}
-                    placeholder="Search for preferred creators"
-                    placeholderTextColor={colors.placeholder}
-                    textColor={colors.onPrimary}
-                    value={creatorSearch}
-                    onChangeText={setCreatorSearch}
-                />
+                <View style={styles.searchContainer}>
+                    <TextInput
+                        style={[styles.searchInput, { backgroundColor: 'transparent' }]}
+                        placeholder="Search for preferred creators (optional)"
+                        placeholderTextColor={colors.placeholder}
+                        textColor={colors.onPrimary}
+                        value={creatorSearch}
+                        onChangeText={handleSearchChange}
+                    />
+                    <View style={styles.suggestions}>
+                        {suggestions.map(name => (
+                            <TouchableOpacity key={name} onPress={() => handleTagPress(name)}>
+                                <Text style={[styles.suggestionItem, { backgroundColor: colors.onBackground, color: colors.onPrimary }]}>{name}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </View>
+
+                <View style={styles.tagsContainer}>
+                    {selectedCreators.map(name => (
+                        <Chip
+                            key={name}
+                            onClose={() => handleTagRemove(name)}
+                            style={styles.chip}
+                        >
+                            {name}
+                        </Chip>
+                    ))}
+                </View>
 
                 <Button
                     mode="contained"
-                    style={[styles.button, { backgroundColor: colors.onSurface }]} // Same style for Upload Song and Confirm buttons
+                    style={[styles.button, { backgroundColor: colors.onSurface }]}
                     labelStyle={{ color: colors.text }}
                     onPress={() => document.getElementById('fileInput').click()}
                 >
@@ -135,7 +181,7 @@ const HomeScreen = () => {
 
                 <Button
                     mode="contained"
-                    style={[styles.button, { backgroundColor: colors.onSurface }]} // Same style for Confirm button
+                    style={[styles.button, { backgroundColor: colors.onSurface }]}
                     labelStyle={{ color: colors.text }}
                     onPress={handleConfirm}
                 >
@@ -143,7 +189,11 @@ const HomeScreen = () => {
                 </Button>
 
                 {successMessage && (
-                    <Text style={[styles.successMessage, { color: 'green' }]}>{successMessage}</Text>
+                    <Text style={[styles.successMessage, { color: colors.primary }]}>{successMessage}</Text>
+                )}
+
+                {errorMessage && (
+                    <Text style={[styles.errorMessage, { color: colors.error }]}>{errorMessage}</Text>
                 )}
             </View>
             <View style={styles.flexFiller}></View>
@@ -175,31 +225,51 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 10,
     },
-    searchInput: {
-        width: '60%', // Width for search bar
-        height: '1%',
-        padding: 10,
+    searchContainer: {
+        width: '60%',
         marginBottom: 20,
-        // backgroundColor: 'transparent', // Make search bar background transparent
     },
-
+    searchInput: {
+        width: '100%',
+    },
+    suggestions: {
+        backgroundColor: 'white',
+        borderRadius: 5,
+        borderColor: "#121212",
+        borderWidth: 1,
+        marginTop: 5,
+        maxHeight: 100,
+        overflow: 'scroll',
+    },
+    suggestionItem: {
+        padding: 10,
+        borderBottomWidth: 1,
+    },
+    tagsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginBottom: 20,
+    },
+    chip: {
+        margin: 5,
+    },
     button: {
-        width: '60%', // Width for buttons
+        width: '60%',
         marginVertical: 10,
     },
     menuButton: {
-        width: '100%', // Width for genre button
+        width: '100%',
         marginBottom: 30,
     },
     menuContent: {
-        width: '100%', // Custom style for Menu content
+        width: '100%',
     },
     audioContainer: {
         marginVertical: 20,
-        paddingVertical: 10, // Add vertical padding
-        borderWidth: 1,  // Optional: Add border to visualize card
-        borderColor: '#ddd', // Optional: Border color
-        borderRadius: 5, // Optional: Rounded corners
+        paddingVertical: 10,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 5,
         width: '60%',
         alignItems: 'center',
     },
@@ -207,6 +277,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     successMessage: {
+        marginTop: 20,
+        fontSize: 16,
+    },
+    errorMessage: {
         marginTop: 20,
         fontSize: 16,
     },
