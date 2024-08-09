@@ -10,6 +10,8 @@ import TopSongsScreen from './screens/TopSongsScreen';
 import SongDetailsScreen from './screens/SongDetailsScreen';
 import Profile from './screens/Profile';
 import { Provider as PaperProvider } from 'react-native-paper';
+import InfluencerSurveyScreen from './screens/InfluencerSurveyScreen';
+import SongArtistSurveyScreen from './screens/SongArtistSurveyScreen';
 import customTheme from './theme';
 
 function App() {
@@ -24,6 +26,7 @@ function App() {
   // Login handler
   function handleLogin() {
     setIsAuthenticated(true);
+    console.log("the user should now have acess to the homepage")
     localStorage.setItem('isAuthenticated', 'true');
   }
 
@@ -48,6 +51,8 @@ function App() {
                 <Route path="/howitworks" element={<HowItWorksScreen />} />
                 <Route path="/join" element={<JoinAsArtistScreen />} />
                 <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/signin" />} />
+                <Route path="/influencer-survey" element={isAuthenticated ? <HomeScreen /> : <InfluencerSurveyScreen onLogin={handleLogin} />} />
+                <Route path="/song-artist-survey" element={isAuthenticated ? <HomeScreen /> : <SongArtistSurveyScreen onLogin={handleLogin} />} />
               </Routes>
             </View>
           </SafeAreaView>

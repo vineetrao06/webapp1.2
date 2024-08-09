@@ -18,6 +18,7 @@
     "@react-navigation/native-stack": "^6.11.0",
     "@react-navigation/stack": "^6.4.1",
     "@react-oauth/google": "^0.12.1",
+    "@typeform/embed-react": "^4.0.0",
     "axios": "^1.7.3",
     "babel-plugin-react-native-web": "^0.19.12",
     "cors": "^2.8.5",
@@ -41,7 +42,9 @@
     "react-native-sound": "^0.11.2",
     "react-native-web": "^0.19.12",
     "react-router-dom": "^6.26.0",
-    "react-router-native": "^6.26.0"
+    "react-router-native": "^6.26.0",
+    "survey-core": "^1.11.10",
+    "survey-react-ui": "^1.11.10"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

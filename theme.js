@@ -9,7 +9,9 @@ const customTheme = {
         secondary: '#4996a3',   // Custom secondary color
         background: '#121212',  // Dark mode background color
         surface: '#333333',     // Dark mode surface color
-        text: '#ffffff',        // Light text color for dark mode
+        text: '#ffffff', 
+        // onSurface: '#484848'       
+        // Light text color for dark mode
         // Add other colors as needed
     },
 };

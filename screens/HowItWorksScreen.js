@@ -10,7 +10,7 @@ const HowItWorksScreen = () => {
             <Text style={[styles.heading, { color: colors.primary }]}>Heading 1</Text>
             <Text style={styles.paragraph}>This is some placeholder text for Heading 1.</Text>
 
-            <Text style={[styles.heading, { color: colors.[accent] }]}>Heading 2</Text>
+            <Text style={[styles.heading, { color: colors.primary }]}>Heading 2</Text>
             <Text style={styles.paragraph}>This is some placeholder text for Heading 2.</Text>
 
             <Text style={[styles.heading, { color: colors.text }]}>Heading 3</Text>
