@@ -20,6 +20,7 @@ const SignInScreen = ({ onLogin }) => {
             const name = decodedResponse.name;
             const picture = decodedResponse.picture;
             const email = decodedResponse.email;
+            const userID = decodedResponse.sub;
 
             const userDetails = {
                 ...decodedResponse,
@@ -33,25 +34,33 @@ const SignInScreen = ({ onLogin }) => {
             localStorage.setItem('picture', picture);
             localStorage.setItem('email', email);
             localStorage.setItem('userType', userType);
+            localStorage.setItem('userID', userID);
 
             // Check if it's the user's first time logging in by using their email
             const firstTimeUserKey = `firstTimeUser_${email}`;
             const firstTimeUser = localStorage.getItem(firstTimeUserKey) === null;
 
-            if (firstTimeUser) {
-                console.log('This is the user\'s first time logging in.');
-                // Set the flag to indicate that the user has logged in before
-                localStorage.setItem(firstTimeUserKey, 'false');
+            // if (firstTimeUser) {
+            //     console.log('This is the user\'s first time logging in.');
+            //     // Set the flag to indicate that the user has logged in before
+            //     localStorage.setItem(firstTimeUserKey, 'false');
 
-                if (userType === 'Influencer') {
-                    navigate('/influencer-survey'); // Pass onLogin to SurveyScreen
-                } else {
-                    navigate('/song-artist-survey'); // this means user is a song artist
-                }
+            //     if (userType === 'Influencer') {
+            //         navigate('/influencer-survey'); // Pass onLogin to SurveyScreen
+            //     } else {
+            //         navigate('/song-artist-survey'); // this means user is a song artist
+            //     }
+            // } else {
+            //     console.log('This is not the user\'s first time logging in.');
+            //     onLogin();
+            //     navigate('/'); // Redirect to home page for existing users
+            // }
+
+            // ! DEBUGGING
+            if (userType === 'Influencer') {
+                navigate('/influencer-survey'); // Pass onLogin to SurveyScreen
             } else {
-                console.log('This is not the user\'s first time logging in.');
-                onLogin();
-                navigate('/'); // Redirect to home page for existing users
+                navigate('/song-artist-survey'); // this means user is a song artist
             }
 
         } catch (error) {

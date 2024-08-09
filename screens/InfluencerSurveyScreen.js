@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-native';
 import { Survey } from 'survey-react-ui';
 import { Model } from 'survey-core';
 import 'survey-core/defaultV2.min.css';
+import axios from 'axios';
 import { useTheme } from 'react-native-paper';
 // import { LayeredDarkPanelless, SolidDarkPanelless, ThreeDimensionalDarkPanelless } from "survey-core/themes";
 
@@ -124,10 +125,26 @@ const InfluencerSurveyScreen = ({onLogin}) => {
         "headerView": "basic"
     });
 
+    async function sendPostRequest(result) {
+        const userIdFromSignIn = localStorage.getItem('userID');
+        console.log('now sending the post req');
+
+        try {
+            const response = await axios.post('http://localhost:8082/api/survey/saveSurvey', {
+                userId: userIdFromSignIn,
+                type: 'Song Artist', // Add the type field
+                ...result.data, // This spreads the survey data into the POST request
+            });
+            console.log('Server Response:', response.data);
+        } catch (error) {
+            console.error('Error saving survey:', error);
+        }
+    }
 
     const handleSurveyComplete = (result) => {
         console.log('Survey Result:', result.data);
         onLogin();
+        sendPostRequest(result);
         navigate('/'); // Redirect to home page after survey completion
     };
 

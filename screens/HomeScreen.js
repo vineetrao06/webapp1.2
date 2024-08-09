@@ -58,7 +58,7 @@ const HomeScreen = () => {
             formData.append('genre', selectedGenre);
 
             try {
-                await axios.post('http://localhost:8082/upload', formData);
+                await axios.post('http://localhost:8082/api/songs/upload', formData);
                 setSuccessMessage('Song uploaded successfully!');
                 setSong(null);
                 setSongName('');
