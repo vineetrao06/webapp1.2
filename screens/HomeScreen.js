@@ -7,14 +7,19 @@ import { Button, useTheme, Menu, TextInput, Chip } from 'react-native-paper';
 const HomeScreen = () => {
     const [song, setSong] = useState(null);
     const [songName, setSongName] = useState('');
-    const [uploader, setUploader] = useState('');
+    // const [uploader, setUploader] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [selectedGenre, setSelectedGenre] = useState('');
     const [creatorSearch, setCreatorSearch] = useState('');
     const [menuVisible, setMenuVisible] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
     const [selectedCreators, setSelectedCreators] = useState([]);
-    const [errorMessage, setErrorMessage] = useState(''); // State to manage error message
+    const [errorMessage, setErrorMessage] = useState('');
+    // const [userType, setUserType] = useState(''); // State to store user type
+    
+    
+    const userType = localStorage.getItem('userType')
+    const uploader = localStorage.getItem('name')
     const { colors } = useTheme();
 
     useEffect(() => {
@@ -22,18 +27,39 @@ const HomeScreen = () => {
             try {
                 const userInfo = await GoogleSignin.getCurrentUser();
                 if (userInfo) {
-                    setUploader(localStorage.getItem("name"));
+                    
+                    // let fetchedUserType = localStorage.getItem('userType'); // this will only be available in the next asyc cycle
+                    
+                    // setUserType(fetchedUserType)
+                    // setUploader(localStorage.getItem("name"));
                 }
             } catch (error) {
                 console.error('Error fetching user info:', error);
             }
         }
 
+        console.log('user type localstorage:', localStorage.getItem('userType'))
+        console.log('user type variable:', userType)
+
+
         fetchUserInfo();
     }, []);
 
-    const names = ['Alice Johnson', 'Bob Smith', 'Charlie Brown', 'Daisy Miller', 'Evan Davis', 'Fiona Clark', 'George Harris', 'Hannah Lee', 'Ian Walker', 'Jane Adams'];
 
+
+    if (userType === 'Influencer') {
+        // Render a blank screen or a message for influencers
+        return (
+            <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+                <View style={styles.content}>
+                    <Text style={[styles.title, { color: colors.primary }]}>Welcome, {uploader}!</Text>
+                    <Text style={{ color: colors.text }}>This page is only for song artists.</Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    // Function to handle file input change
     function handleFileChange(event) {
         const file = event.target.files[0];
         if (file) {
@@ -42,11 +68,17 @@ const HomeScreen = () => {
         }
     }
 
+    // Function to handle the confirm button click
     async function handleConfirm() {
+        console.log('user type localstorage:', localStorage.getItem('userType'))
+        console.log('user type variable:', userType)
+
         if (!selectedGenre) {
             setErrorMessage('Please select a genre.');
             return;
         }
+
+        console.log
 
         if (song) {
             const formData = new FormData();
@@ -74,11 +106,13 @@ const HomeScreen = () => {
         }
     }
 
+    // Function to handle creator search input change
     function handleSearchChange(text) {
         setCreatorSearch(text);
         setSuggestions(names.filter(name => name.toLowerCase().includes(text.toLowerCase())));
     }
 
+    // Function to handle the selection of a creator
     function handleTagPress(name) {
         if (!selectedCreators.includes(name)) {
             setSelectedCreators([...selectedCreators, name]);
@@ -87,6 +121,7 @@ const HomeScreen = () => {
         setSuggestions([]);
     }
 
+    // Function to handle the removal of a selected creator
     function handleTagRemove(name) {
         setSelectedCreators(selectedCreators.filter(item => item !== name));
     }

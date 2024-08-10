@@ -127,12 +127,17 @@ const InfluencerSurveyScreen = ({onLogin}) => {
 
     async function sendPostRequest(result) {
         const userIdFromSignIn = localStorage.getItem('userID');
+        const nameFromSignIn = localStorage.getItem('name');
+        const emailFromSignIn = localStorage.getItem('email');
         console.log('now sending the post req');
 
         try {
             const response = await axios.post('http://localhost:8082/api/survey/saveSurvey', {
                 userId: userIdFromSignIn,
-                type: 'Song Artist', // Add the type field
+                name: nameFromSignIn,
+                email: emailFromSignIn,
+                type: 'Influencer', // Add the type field
+
                 ...result.data, // This spreads the survey data into the POST request
             });
             console.log('Server Response:', response.data);
@@ -153,7 +158,6 @@ const InfluencerSurveyScreen = ({onLogin}) => {
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: colors.background,
         },
         flexFiller: {
             paddingBottom: 1000,
