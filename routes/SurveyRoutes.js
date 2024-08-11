@@ -4,22 +4,34 @@ const Survey = require('../models/Survey');
 
 // Save survey data
 router.post('/saveSurvey', async (req, res) => {
-    const { userId, genres, industry = null, platforms, followers = null, type } = req.body;
+    const { userId, genres, industry = null, platforms, followers = null, type, name, email } = req.body;
+
+    console.log('Received survey data:', {
+        userId,
+        genres,
+        industry,
+        platforms,
+        followers,
+        type,
+        name,
+        email
+    });
 
     try {
         const existingSurvey = await Survey.findOne({ userId });
         if (existingSurvey) {
-            // Update the existing survey data
             existingSurvey.genres = genres;
             existingSurvey.industry = industry;
             existingSurvey.platforms = platforms;
             existingSurvey.followers = followers;
-            existingSurvey.type = type; // Ensure the type is updated
+            existingSurvey.type = type;
+            existingSurvey.name = name;
+            existingSurvey.email = email;
             await existingSurvey.save();
         } else {
-            // Create a new survey entry
-            const newSurvey = new Survey({ userId, genres, industry, platforms, followers, type });
+            const newSurvey = new Survey({ userId, genres, industry, platforms, followers, type, name, email });
             await newSurvey.save();
+            console.log('Saved survey:', newSurvey);
         }
         res.status(200).json({ message: 'Survey data saved successfully!' });
     } catch (error) {

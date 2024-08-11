@@ -7,6 +7,8 @@ const surveySchema = new mongoose.Schema({
     platforms: [String],
     followers: Number,
     type: String,
+    name: String,
+    email: String,
 }, { timestamps: true }); // Add timestamps to track when the data was created/updated
 
 const Survey = mongoose.model('Survey', surveySchema);
