@@ -20,6 +20,7 @@ router.post('/saveSurvey', async (req, res) => {
     try {
         const existingSurvey = await Survey.findOne({ userId });
         if (existingSurvey) {
+            // Update the existing survey with the new data
             existingSurvey.genres = genres;
             existingSurvey.industry = industry;
             existingSurvey.platforms = platforms;
@@ -29,6 +30,7 @@ router.post('/saveSurvey', async (req, res) => {
             existingSurvey.email = email;
             await existingSurvey.save();
         } else {
+            // Create a new survey if one doesn't exist for the user
             const newSurvey = new Survey({ userId, genres, industry, platforms, followers, type, name, email });
             await newSurvey.save();
             console.log('Saved survey:', newSurvey);
@@ -39,14 +41,22 @@ router.post('/saveSurvey', async (req, res) => {
     }
 });
 
-// Get survey data for a user
+// Get all survey data or survey data for a specific user
 router.get('/', async (req, res) => {
     const { userId } = req.query;
 
     try {
-        const survey = await Survey.findOne({ userId });
-        if (survey) {
-            res.json(survey);
+        let surveys;
+        if (userId) {
+            // Fetch survey data for a specific user if userId is provided
+            surveys = await Survey.findOne({ userId });
+        } else {
+            // Fetch all surveys if no userId is provided
+            surveys = await Survey.find();
+        }
+
+        if (surveys && surveys.length > 0) {
+            res.json(surveys);
         } else {
             res.status(404).json({ message: 'Survey data not found.' });
         }

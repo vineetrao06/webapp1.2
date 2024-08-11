@@ -32,7 +32,6 @@ const HomeScreen = () => {
         fetchUserInfo();
     }, []);
 
-    const names = ['Alice Johnson', 'Bob Smith', 'Charlie Brown', 'Daisy Miller', 'Evan Davis', 'Fiona Clark', 'George Harris', 'Hannah Lee', 'Ian Walker', 'Jane Adams'];
 
     function handleFileChange(event) {
         const file = event.target.files[0];
@@ -74,10 +73,38 @@ const HomeScreen = () => {
         }
     }
 
+    // const names = ['Alice Johnson', 'Bob Smith', 'Charlie Brown', 'Daisy Miller', 'Evan Davis', 'Fiona Clark', 'George Harris', 'Hannah Lee', 'Ian Walker', 'Jane Adams'];
+
+
+    async function getSurveyData() {
+        try {
+            const response = await axios.get('http://localhost:8082/api/survey/');
+            const surveyData = response.data
+            const surveyDataNames = surveyData.map(item => item.name)
+            
+            return surveyDataNames
+
+        } catch (error) {
+            console.error('Error fetching data:', error); // Handle the error
+            return "Does not work"
+
+        }
+    }
+
     function handleSearchChange(text) {
         setCreatorSearch(text);
-        setSuggestions(names.filter(name => name.toLowerCase().includes(text.toLowerCase())));
+
+        getSurveyData().then(namesFromDatabase => {
+            console.log(namesFromDatabase); // Now this will correctly log the array of names from the database
+
+            setSuggestions(namesFromDatabase.filter(name => name.toLowerCase().includes(text.toLowerCase())));
+        }).catch(error => {
+            console.error('Error in handleSearchChange:', error);
+            setSuggestions([]); // Clear suggestions if there's an error
+        });
     }
+
+
 
     function handleTagPress(name) {
         if (!selectedCreators.includes(name)) {
