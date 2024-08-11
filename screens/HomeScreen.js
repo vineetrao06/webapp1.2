@@ -13,9 +13,104 @@ const HomeScreen = () => {
     const [creatorSearch, setCreatorSearch] = useState('');
     const [menuVisible, setMenuVisible] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
-    const [selectedCreators, setSelectedCreators] = useState([]);
+    const [selectedCreatorsNames, setSelectedCreators] = useState([]);
     const [errorMessage, setErrorMessage] = useState(''); // State to manage error message
+    // const [preferredArtists, setPreferredArtists] = useState('');
+    const [nameIdMap, setNameIdMap] = useState([]);
     const { colors } = useTheme();
+
+
+    const styles = StyleSheet.create({
+        container: {
+            flex: 1,
+            justifyContent: 'center',
+            padding: 20,
+            backgroundColor: colors.background,
+        },
+        flexFiller: {
+            paddingBottom: 1000,
+        },
+        content: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+        title: {
+            fontSize: 24,
+            marginBottom: 20,
+            paddingTop: 50,
+            fontWeight: 'bold',
+            color: colors.primary,
+        },
+        subtitle: {
+            fontSize: 18, 
+            marginBottom: 20,
+            color: '#888'
+        },
+        label: {
+            fontSize: 16,
+            marginBottom: 10,
+        },
+        searchContainer: {
+            width: '60%',
+            marginBottom: 20,
+        },
+        searchInput: {
+            width: '100%',
+        },
+        suggestions: {
+            backgroundColor: 'white',
+            borderRadius: 5,
+            borderColor: "#121212",
+            borderWidth: 1,
+            marginTop: 5,
+            maxHeight: 100,
+            overflow: 'scroll',
+        },
+        suggestionItem: {
+            padding: 10,
+            borderBottomWidth: 1,
+        },
+        tagsContainer: {
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            marginBottom: 20,
+        },
+        chip: {
+            margin: 5,
+        },
+        button: {
+            width: '60%',
+            marginVertical: 10,
+        },
+        menuButton: {
+            width: '100%',
+            marginBottom: 30,
+        },
+        menuContent: {
+            width: '100%',
+        },
+        audioContainer: {
+            marginVertical: 20,
+            paddingVertical: 10,
+            borderWidth: 1,
+            borderColor: '#ddd',
+            borderRadius: 5,
+            width: '60%',
+            alignItems: 'center',
+        },
+        songName: {
+            fontSize: 16,
+        },
+        successMessage: {
+            marginTop: 20,
+            fontSize: 16,
+        },
+        errorMessage: {
+            marginTop: 20,
+            fontSize: 16,
+        },
+    });
 
     useEffect(() => {
         async function fetchUserInfo() {
@@ -41,7 +136,23 @@ const HomeScreen = () => {
         }
     }
 
+    function getFirstIds(selectedCreatorsIds, nameIdMap) {
+        return selectedCreatorsIds.map(name => {
+            const id = nameIdMap[name];
+            // If the ID is an array, return the first element, otherwise return the ID directly
+            return Array.isArray(id) ? id[0] : id;
+        });
+    }
+
     async function handleConfirm() {
+        console.log('this will be the array going into the database from handleConfirm', selectedCreatorsNames)
+        console.log('this will be name id map from handleConfirm', nameIdMap)
+
+        const selectedCreatorsIds = getSelectedIds(selectedCreatorsNames, nameIdMap)
+        console.log('selected creator ids from handleConfirm', selectedCreatorsIds)
+        localStorage.setItem('selectedCreatorsIdsFromUser', selectedCreatorsIds)
+
+
         if (!selectedGenre) {
             setErrorMessage('Please select a genre.');
             return;
@@ -55,6 +166,7 @@ const HomeScreen = () => {
             formData.append('uploader', localStorage.getItem("name"));
             formData.append('email', localStorage.getItem("email"));
             formData.append('genre', selectedGenre);
+            formData.append('selectedCreators', selectedCreatorsIds);
 
             try {
                 await axios.post('http://localhost:8082/api/songs/upload', formData);
@@ -81,6 +193,9 @@ const HomeScreen = () => {
             const response = await axios.get('http://localhost:8082/api/survey/');
             const surveyData = response.data
             const surveyDataNames = surveyData.map(item => item.name)
+            setNameIdMap(createNameIdMapping(response))
+            console.log(nameIdMap)
+            console.log(response)
             
             return surveyDataNames
 
@@ -96,26 +211,73 @@ const HomeScreen = () => {
 
         getSurveyData().then(namesFromDatabase => {
             console.log(namesFromDatabase); // Now this will correctly log the array of names from the database
-
             setSuggestions(namesFromDatabase.filter(name => name.toLowerCase().includes(text.toLowerCase())));
-        }).catch(error => {
-            console.error('Error in handleSearchChange:', error);
-            setSuggestions([]); // Clear suggestions if there's an error
+
+        })
+    }
+
+    function createNameIdMapping(response) {
+        const nameIdMap = {};
+
+        response.data.forEach(item => {
+            const { name, _id } = item;
+
+            if (nameIdMap[name]) {
+                // If the name already exists, push the new ID into the array
+                if (Array.isArray(nameIdMap[name])) {
+                    nameIdMap[name].push(_id);
+                } else {
+                    // Convert the single ID to an array if not already
+                    nameIdMap[name] = [nameIdMap[name], _id];
+                }
+            } else {
+                // If the name doesn't exist, add it to the object
+                nameIdMap[name] = _id;
+            }
         });
+
+        return nameIdMap;
+    }
+
+    function getSelectedIds(selectedCreatorsNames, nameIdMap) {
+        let selectedIds = [];
+
+        selectedCreatorsNames.forEach(name => {
+            if (nameIdMap[name]) {
+                if (Array.isArray(nameIdMap[name])) {
+                    selectedIds = selectedIds.concat(nameIdMap[name]);
+                } else {
+                    selectedIds.push(nameIdMap[name]);
+                }
+            }
+        });
+
+        return selectedIds;
     }
 
 
-
     function handleTagPress(name) {
-        if (!selectedCreators.includes(name)) {
-            setSelectedCreators([...selectedCreators, name]);
+        if (!selectedCreatorsNames.includes(name)) {
+            setSelectedCreators([...selectedCreatorsNames, name]);
         }
         setCreatorSearch('');
         setSuggestions([]);
     }
 
     function handleTagRemove(name) {
-        setSelectedCreators(selectedCreators.filter(item => item !== name));
+        setSelectedCreators(selectedCreatorsNames.filter(item => item !== name));
+    }
+    
+    const userType = localStorage.getItem('userType')
+    // console.log(userType)
+    if (userType === "Influencer") {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.title}>Songs that others requested to you</Text>
+                <Text style={styles.subtitle}>Based on your preferences</Text>
+                
+            </View>
+        )
     }
 
     return (
@@ -172,7 +334,7 @@ const HomeScreen = () => {
                 </View>
 
                 <View style={styles.tagsContainer}>
-                    {selectedCreators.map(name => (
+                    {selectedCreatorsNames.map(name => (
                         <Chip
                             key={name}
                             onClose={() => handleTagRemove(name)}
@@ -227,90 +389,5 @@ const HomeScreen = () => {
         </SafeAreaView>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        padding: 20,
-    },
-    flexFiller: {
-        paddingBottom: 1000,
-    },
-    content: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    title: {
-        fontSize: 24,
-        marginBottom: 20,
-        paddingTop: 50,
-        fontWeight: 'bold',
-    },
-    label: {
-        fontSize: 16,
-        marginBottom: 10,
-    },
-    searchContainer: {
-        width: '60%',
-        marginBottom: 20,
-    },
-    searchInput: {
-        width: '100%',
-    },
-    suggestions: {
-        backgroundColor: 'white',
-        borderRadius: 5,
-        borderColor: "#121212",
-        borderWidth: 1,
-        marginTop: 5,
-        maxHeight: 100,
-        overflow: 'scroll',
-    },
-    suggestionItem: {
-        padding: 10,
-        borderBottomWidth: 1,
-    },
-    tagsContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        marginBottom: 20,
-    },
-    chip: {
-        margin: 5,
-    },
-    button: {
-        width: '60%',
-        marginVertical: 10,
-    },
-    menuButton: {
-        width: '100%',
-        marginBottom: 30,
-    },
-    menuContent: {
-        width: '100%',
-    },
-    audioContainer: {
-        marginVertical: 20,
-        paddingVertical: 10,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 5,
-        width: '60%',
-        alignItems: 'center',
-    },
-    songName: {
-        fontSize: 16,
-    },
-    successMessage: {
-        marginTop: 20,
-        fontSize: 16,
-    },
-    errorMessage: {
-        marginTop: 20,
-        fontSize: 16,
-    },
-});
 
 export default HomeScreen;

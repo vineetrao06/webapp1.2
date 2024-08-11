@@ -24,6 +24,7 @@ router.post('/upload', upload.single('song'), async (req, res) => {
         uploader: req.body.uploader, // Get uploader's name from request body
         email: req.body.email, // Get uploader's email from request body
         genre: req.body.genre, // Get genre from request body
+        selectedCreators: req.body.selectedCreators, // Get genre from request body
     });
 
     try {

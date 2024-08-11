@@ -41,28 +41,28 @@ const SignInScreen = ({ onLogin }) => {
             const firstTimeUserKey = `firstTimeUser_${email}`;
             const firstTimeUser = localStorage.getItem(firstTimeUserKey) === null;
 
-            // if (firstTimeUser) {
-            //     console.log('This is the user\'s first time logging in.');
-            //     // Set the flag to indicate that the user has logged in before
-            //     localStorage.setItem(firstTimeUserKey, 'false');
+            if (firstTimeUser) {
+                console.log('This is the user\'s first time logging in.');
+                // Set the flag to indicate that the user has logged in before
+                localStorage.setItem(firstTimeUserKey, 'false');
 
-            //     if (userType === 'Influencer') {
-            //         navigate('/influencer-survey'); // Pass onLogin to SurveyScreen
-            //     } else {
-            //         navigate('/song-artist-survey'); // this means user is a song artist
-            //     }
-            // } else {
-            //     console.log('This is not the user\'s first time logging in.');
-            //     onLogin();
-            //     navigate('/'); // Redirect to home page for existing users
-            // }
+                if (userType === 'Influencer') {
+                    navigate('/influencer-survey'); // Pass onLogin to SurveyScreen
+                } else {
+                    navigate('/song-artist-survey'); // this means user is a song artist
+                }
+            } else {
+                console.log('This is not the user\'s first time logging in.');
+                onLogin();
+                navigate('/'); // Redirect to home page for existing users
+            }
 
             // ! DEBUGGING
-            if (userType === 'Influencer') {
-                navigate('/influencer-survey'); // Pass onLogin to SurveyScreen
-            } else {
-                navigate('/song-artist-survey'); // this means user is a song artist
-            }
+            // if (userType === 'Influencer') {
+            //     navigate('/influencer-survey'); // Pass onLogin to SurveyScreen
+            // } else {
+            //     navigate('/song-artist-survey'); // this means user is a song artist
+            // }
 
         } catch (error) {
             console.error('Token decoding failed:', error);
