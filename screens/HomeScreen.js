@@ -328,8 +328,8 @@ const HomeScreen = () => {
     if (userType === "Influencer") {
         return (
             <View style={styles.container}>
-                <Text style={styles.title}>Songs that others requested to you</Text>
-                <Text style={styles.subtitle}>Based on your preferences</Text>
+                <Text style={styles.title}>Songs requests</Text>
+                <Text style={styles.subtitle}>Filtered based on your preferences</Text>
 
                 <SongCardContainer songs={songs}></SongCardContainer>
                 {/* heres what you wanna do: 

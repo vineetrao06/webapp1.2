@@ -9,6 +9,7 @@ const Profile = () => {
     const name = localStorage.getItem('name');
     const email = localStorage.getItem('email');
     const picture = localStorage.getItem('picture');
+    const userId = localStorage.getItem('userID')
 
     const [songs, setSongs] = useState([]);
     const [songIds, setSongIds] = useState([]);
@@ -56,7 +57,7 @@ const Profile = () => {
         <ScrollView style={styles.scrollView} contentContainerStyle={[styles.contentContainer, { backgroundColor: colors.background }]}>
             <Image source={{ uri: picture }} style={styles.profilePicture} />
             <Text style={[styles.name, { color: colors.onPrimary }]}>{name}</Text>
-            <Text style={[styles.email, { color: colors.text }]}>{email}</Text>
+            <Text style={styles.email}>{email}</Text>
             <Text style={[styles.name, { color: colors.primary, paddingTop: 20 }]}>Your Songs</Text>
             {/* {chunkArray(songs, 4).map(renderRow)} */}
             <SongCardContainer songs={songs}></SongCardContainer>
@@ -95,9 +96,9 @@ const styles = StyleSheet.create({
     },
     row: {
         flexDirection: 'row',
-        justifyContent: 'flex-start',
+        justifyContent: 'space-between', // Distribute space evenly
         width: '100%',
-        flexWrap: 'wrap', // Ensure items wrap to the next line
+        flexWrap: 'wrap',
         marginBottom: 20,
     },
 });

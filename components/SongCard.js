@@ -1,3 +1,5 @@
+// SongCard.js
+
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useTheme } from 'react-native-paper';
@@ -33,7 +35,7 @@ const styles = StyleSheet.create({
     card: {
         borderRadius: 8,
         padding: 10,
-        width: '23%',
+        width: '23%', // Adjust this if necessary to fit 4 cards in a row
         marginHorizontal: '1%',
         marginBottom: 20,
         shadowColor: '#000',
@@ -41,7 +43,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 4,
         elevation: 5,
-        borderWidth: 1, // Add border width
+        borderWidth: 1,
     },
     cardContent: {
         alignItems: 'center',
