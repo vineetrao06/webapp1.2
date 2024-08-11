@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-na
 import axios from 'axios';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { Button, useTheme, Menu, TextInput, Chip } from 'react-native-paper';
+import SongCardContainer from '../components/SongCardContainer';
 
 const HomeScreen = () => {
     const [song, setSong] = useState(null);
@@ -19,7 +20,7 @@ const HomeScreen = () => {
     const [nameIdMap, setNameIdMap] = useState([]);
     const [selectedCreatorsIds, setSelectedCreatorsIds] = useState([]);
     const { colors } = useTheme();
-
+    const [songs, setSongs] = useState([]); // Initialize songs as an empty array
 
     const styles = StyleSheet.create({
         container: {
@@ -124,6 +125,24 @@ const HomeScreen = () => {
                 console.error('Error fetching user info:', error);
             }
         }
+        async function fetchRequestedSongs() {
+            try {
+                const response = await axios.get('http://localhost:8082/api/songs/');
+                const currentInfluencerId = localStorage.getItem('userID');
+
+                const allSongs = response.data;
+
+                const songsWithCurrentInfluencerRequested = allSongs.filter(
+                    song => song.selectedCreators.split(',').includes(currentInfluencerId)
+                );
+
+                setSongs(songsWithCurrentInfluencerRequested); // Set songs after filtering
+            } catch (error) {
+                console.error('Error fetching songs:', error);
+            }
+        }
+
+        fetchRequestedSongs();
 
         fetchUserInfo();
     }, []);
@@ -271,11 +290,25 @@ const HomeScreen = () => {
         setSelectedCreatorsNames(selectedCreatorsNames.filter(item => item !== name));
     }
 
-    async function getSongsFromDatabase() {
+    async function getRequestedSongsFromDatabase() {
         try {
             const response = await axios.get('http://localhost:8082/api/songs/');
-            console.log(response)
-            console.log("ids when getting songs from database", selectedCreatorsIds)
+            const currentInfluencerId = localStorage.getItem('userID')
+
+            const allSongs = response.data
+
+            console.log('all songs', allSongs)
+
+
+            const songsWithCurrentInfluencerRequested = allSongs.filter(
+                song => song.selectedCreators.split(',').includes(currentInfluencerId)
+            )
+
+            console.log(songsWithCurrentInfluencerRequested)
+
+
+            // return songsWithCurrentInfluencerRequested
+            // console.log("ids when getting songs from database", selectedCreatorsIds)
             
             // return surveyDataNames
 
@@ -286,17 +319,19 @@ const HomeScreen = () => {
         }
     }
 
-    getSongsFromDatabase()
+
     
     const userType = localStorage.getItem('userType')
     // console.log(userType)
+
+    // console.log(songs)
     if (userType === "Influencer") {
         return (
             <View style={styles.container}>
                 <Text style={styles.title}>Songs that others requested to you</Text>
                 <Text style={styles.subtitle}>Based on your preferences</Text>
 
-
+                <SongCardContainer songs={songs}></SongCardContainer>
                 {/* heres what you wanna do: 
                     when song artist request uploads a song, all the requested influencer id's are listed
                     now in the influencer screen the code first needs to check if the id of the current user matches that of one of 
@@ -304,6 +339,15 @@ const HomeScreen = () => {
                     IF SO then you want to access the ENTIRE song object from the object array from the database
 
                 */}
+
+
+
+                {/* /* get everything from the songs database NEED TO DO AXIOS "GET", no shortcuts*/
+                /* look through the entire thing and see if the users id matches that of any of the song postings  */
+                /* if it does, get the entire song object or objects  */
+                /* pass them into <SongCardContainer></SongCardContainer>  */}
+
+                
             </View>
         )
     }
