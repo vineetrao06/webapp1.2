@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import axios from 'axios';
 import { useTheme } from 'react-native-paper';
 import SongCard from '../components/SongCard';
+import SongCardContainer from '../components/SongCardContainer';
 
 const Profile = () => {
     const name = localStorage.getItem('name');
@@ -10,13 +11,17 @@ const Profile = () => {
     const picture = localStorage.getItem('picture');
 
     const [songs, setSongs] = useState([]);
+    const [songIds, setSongIds] = useState([]);
     const { colors } = useTheme();
 
     useEffect(() => {
         async function getSongDetails() {
             const response = await axios.get(`http://localhost:8082/api/songs/`);
             const songsResponse = response.data;
-            console.log(songsResponse)
+            console.log(songsResponse.map(song => song._id))
+
+            setSongIds(songsResponse.map(song => song._id))
+        
             const songsByUploader = getSongsByUploader(email, songsResponse);
             setSongs(songsByUploader);
         }
@@ -53,7 +58,8 @@ const Profile = () => {
             <Text style={[styles.name, { color: colors.onPrimary }]}>{name}</Text>
             <Text style={[styles.email, { color: colors.text }]}>{email}</Text>
             <Text style={[styles.name, { color: colors.primary, paddingTop: 20 }]}>Your Songs</Text>
-            {chunkArray(songs, 4).map(renderRow)}
+            {/* {chunkArray(songs, 4).map(renderRow)} */}
+            <SongCardContainer songs={songs}></SongCardContainer>
             <View style={styles.flexFiller}></View>
         </ScrollView>
     );

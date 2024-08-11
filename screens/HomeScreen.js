@@ -13,10 +13,11 @@ const HomeScreen = () => {
     const [creatorSearch, setCreatorSearch] = useState('');
     const [menuVisible, setMenuVisible] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
-    const [selectedCreatorsNames, setSelectedCreators] = useState([]);
+    const [selectedCreatorsNames, setSelectedCreatorsNames] = useState([]);
     const [errorMessage, setErrorMessage] = useState(''); // State to manage error message
     // const [preferredArtists, setPreferredArtists] = useState('');
     const [nameIdMap, setNameIdMap] = useState([]);
+    const [selectedCreatorsIds, setSelectedCreatorsIds] = useState([]);
     const { colors } = useTheme();
 
 
@@ -147,9 +148,11 @@ const HomeScreen = () => {
     async function handleConfirm() {
         console.log('this will be the array going into the database from handleConfirm', selectedCreatorsNames)
         console.log('this will be name id map from handleConfirm', nameIdMap)
+        setSelectedCreatorsIds(getSelectedIds(selectedCreatorsNames, nameIdMap))
 
-        const selectedCreatorsIds = getSelectedIds(selectedCreatorsNames, nameIdMap)
-        console.log('selected creator ids from handleConfirm', selectedCreatorsIds)
+
+        const ids = getSelectedIds(selectedCreatorsNames, nameIdMap);
+        console.log('selected creator ids from handleConfirm', ids)
         localStorage.setItem('selectedCreatorsIdsFromUser', selectedCreatorsIds)
 
 
@@ -166,7 +169,7 @@ const HomeScreen = () => {
             formData.append('uploader', localStorage.getItem("name"));
             formData.append('email', localStorage.getItem("email"));
             formData.append('genre', selectedGenre);
-            formData.append('selectedCreators', selectedCreatorsIds);
+            formData.append('selectedCreators', ids);
 
             try {
                 await axios.post('http://localhost:8082/api/songs/upload', formData);
@@ -194,8 +197,8 @@ const HomeScreen = () => {
             const surveyData = response.data
             const surveyDataNames = surveyData.map(item => item.name)
             setNameIdMap(createNameIdMapping(response))
-            console.log(nameIdMap)
-            console.log(response)
+            console.log('nameidmap', nameIdMap)
+            console.log('response', response)
             
             return surveyDataNames
 
@@ -220,19 +223,19 @@ const HomeScreen = () => {
         const nameIdMap = {};
 
         response.data.forEach(item => {
-            const { name, _id } = item;
+            const { name, userId } = item;
 
             if (nameIdMap[name]) {
                 // If the name already exists, push the new ID into the array
                 if (Array.isArray(nameIdMap[name])) {
-                    nameIdMap[name].push(_id);
+                    nameIdMap[name].push(userId);
                 } else {
                     // Convert the single ID to an array if not already
-                    nameIdMap[name] = [nameIdMap[name], _id];
+                    nameIdMap[name] = [nameIdMap[name], userId];
                 }
             } else {
                 // If the name doesn't exist, add it to the object
-                nameIdMap[name] = _id;
+                nameIdMap[name] = userId;
             }
         });
 
@@ -258,15 +261,32 @@ const HomeScreen = () => {
 
     function handleTagPress(name) {
         if (!selectedCreatorsNames.includes(name)) {
-            setSelectedCreators([...selectedCreatorsNames, name]);
+            setSelectedCreatorsNames([...selectedCreatorsNames, name]);
         }
         setCreatorSearch('');
         setSuggestions([]);
     }
 
     function handleTagRemove(name) {
-        setSelectedCreators(selectedCreatorsNames.filter(item => item !== name));
+        setSelectedCreatorsNames(selectedCreatorsNames.filter(item => item !== name));
     }
+
+    async function getSongsFromDatabase() {
+        try {
+            const response = await axios.get('http://localhost:8082/api/songs/');
+            console.log(response)
+            console.log("ids when getting songs from database", selectedCreatorsIds)
+            
+            // return surveyDataNames
+
+        } catch (error) {
+            console.error('Error fetching data:', error); // Handle the error
+            return "Does not work"
+
+        }
+    }
+
+    getSongsFromDatabase()
     
     const userType = localStorage.getItem('userType')
     // console.log(userType)
@@ -275,7 +295,15 @@ const HomeScreen = () => {
             <View style={styles.container}>
                 <Text style={styles.title}>Songs that others requested to you</Text>
                 <Text style={styles.subtitle}>Based on your preferences</Text>
-                
+
+
+                {/* heres what you wanna do: 
+                    when song artist request uploads a song, all the requested influencer id's are listed
+                    now in the influencer screen the code first needs to check if the id of the current user matches that of one of 
+                        the influencer id's. 
+                    IF SO then you want to access the ENTIRE song object from the object array from the database
+
+                */}
             </View>
         )
     }
